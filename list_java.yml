@@ -1,0 +1,16 @@
+---
+- name: List Oracle Java version on multiple hosts
+  hosts: all        # or a specific group, e.g. 'java_servers'
+  gather_facts: false
+
+  tasks:
+    - name: Check Java version
+    shell: "java -version 2>&1 | awk -F'\"' 'NR==1{print $2}'"
+      register: java_version
+      ignore_errors: yes
+
+    - name: Show Java version for each host
+      debug:
+        msg: >
+          Host {{ inventory_hostname }} Java version:
+          {{ java_version.stdout | default('Not installed or not in PATH') }}
